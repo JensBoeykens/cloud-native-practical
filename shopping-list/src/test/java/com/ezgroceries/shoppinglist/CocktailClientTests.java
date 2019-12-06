@@ -30,7 +30,7 @@ public class CocktailClientTests {
 		assertNotNull(response.getBody());
 		assertTrue(response.getBody().length > 0);
 
-		assertEquals(response.getBody()[0].name, "Margerita");
+		assertEquals(response.getBody()[0].name, "Black Russian");
 
 	}
 	
