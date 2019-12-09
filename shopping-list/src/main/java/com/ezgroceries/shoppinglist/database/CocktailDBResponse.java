@@ -97,5 +97,28 @@ public class CocktailDBResponse {
             return ingredients;
         }
 
+        public static String getIdDrink(DrinkResource drinkResource) {
+            return drinkResource.idDrink;
+        }
+
+        public String getIdDrink() {
+            return idDrink;
+        }
+
+        public String getStrDrink() {
+            return strDrink;
+        }
+
+        public String getStrDrinkThumb() {
+            return strDrinkThumb;
+        }
+
+        public String getStrInstructions() {
+            return strInstructions;
+        }
+
+        public String getStrGlass() {
+            return strGlass;
+        }
     }
 }

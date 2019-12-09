@@ -5,11 +5,13 @@ import com.ezgroceries.shoppinglist.contracts.CreateShoppingListInput;
 import com.ezgroceries.shoppinglist.contracts.CreateShoppingListOutput;
 import com.ezgroceries.shoppinglist.contracts.GetShoppingListOutput;
 import com.ezgroceries.shoppinglist.model.ShoppingList;
+import com.ezgroceries.shoppinglist.service.CocktailService;
+import com.ezgroceries.shoppinglist.service.ShoppingListService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,13 +19,22 @@ import java.util.stream.Collectors;
 @RestController
 public class ShoppingListController {
 
+    @Autowired
+    private ShoppingListService shoppingListService;
+
+    @Autowired
+    private CocktailService cocktailService;
+
+
     @PostMapping(value = "/shopping-lists")
     public ResponseEntity<CreateShoppingListOutput> addShoppingList(@RequestBody CreateShoppingListInput shoppingListInput) {
         ShoppingList shoppingList = new ShoppingList(shoppingListInput.getName());
 
+        ShoppingList result = shoppingListService.create(shoppingList);
+
         CreateShoppingListOutput output = new CreateShoppingListOutput();
-        output.setName(shoppingList.name);
-        output.setShoppingListId(shoppingList.uuid);
+        output.setName(result.name);
+        output.setShoppingListId(result.uuid);
 
         return new ResponseEntity(output,  HttpStatus.CREATED);
     }
@@ -31,13 +42,9 @@ public class ShoppingListController {
     @PostMapping(value = "/shopping-lists/{uuid}/cocktails")
     public @ResponseBody List<CocktailId> addCocktails(@PathVariable UUID uuid, @RequestBody List<CocktailId> cocktails) {
 
-        /*ShoppingList shoppingList = getShoppingList(uuid).getBody();
+        List<CocktailId> allCocktails = shoppingListService.addCocktailsToList(uuid, cocktails);
 
-        for (CocktailId id : cocktails) {
-            shoppingList.cocktailIds.add(UUID.fromString(id.cocktailId));
-        }*/
-
-        return cocktails;
+        return allCocktails;
     }
 
     @GetMapping(value = "/shopping-lists/{uuid}")
@@ -59,14 +66,11 @@ public class ShoppingListController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<GetShoppingListOutput>> getShoppingLists() {
 
-        List<ShoppingList> shoppingLists = getDummyResources();
+        List<ShoppingList> shoppingLists = shoppingListService.findAll();
         List<GetShoppingListOutput> outputList =
 
-        shoppingLists.parallelStream().map(it -> new GetShoppingListOutput(it, new String[]{"Tequila",
-                "Triple sec",
-                "Lime juice",
-                "Salt",
-                "Blue Curacao"})).collect(Collectors.toList());
+        shoppingLists.parallelStream().map(it -> new GetShoppingListOutput(it,
+                cocktailService.getIngredients(it.cocktailIds))).collect(Collectors.toList());
 
         return new ResponseEntity(outputList,  HttpStatus.OK);
     }
@@ -82,14 +86,5 @@ public class ShoppingListController {
         // HttpServletResponse
         return ResponseEntity.created(location).build();
     }*/
-
-    private List<ShoppingList> getDummyResources() {
-        ShoppingList s1 = new ShoppingList("Stephanies birthday");
-        s1.cocktailIds.add(UUID.fromString("23b3d85a-3928-41c0-a533-6538a71e17c4"));
-        s1.cocktailIds.add(UUID.fromString("d615ec78-fe93-467b-8d26-5d26d8eab073"));
-
-        return Arrays.asList(s1,
-                new ShoppingList("Alexs birthday"));
-    }
 
 }
