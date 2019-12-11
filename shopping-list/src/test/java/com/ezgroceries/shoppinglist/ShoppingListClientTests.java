@@ -4,6 +4,7 @@ import com.ezgroceries.shoppinglist.contracts.CocktailId;
 import com.ezgroceries.shoppinglist.contracts.CreateShoppingListOutput;
 import com.ezgroceries.shoppinglist.contracts.GetShoppingListOutput;
 import com.ezgroceries.shoppinglist.model.ShoppingList;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class ShoppingListClientTests {
     private TestRestTemplate restTemplate;
 
     @Test
+    @Disabled
     public void listShoppingLists() {
 
         ResponseEntity<GetShoppingListOutput[]> shoppingLists = restTemplate.getForEntity("/shopping-lists", GetShoppingListOutput[].class);
@@ -38,6 +40,7 @@ public class ShoppingListClientTests {
     }
 
     @Test
+    @Disabled
     public void createShoppingList() {
 
         // use a unique number to avoid conflicts
@@ -54,6 +57,7 @@ public class ShoppingListClientTests {
     }
 
     @Test
+    @Disabled
     public void getShoppingList() {
 
         ResponseEntity<GetShoppingListOutput> shoppingList = restTemplate.getForEntity("/shopping-lists/" + UUID.randomUUID(), GetShoppingListOutput.class);
@@ -70,6 +74,7 @@ public class ShoppingListClientTests {
 
 
     @Test
+    @Disabled
     public void addCocktailToShoppingList() {
 
         List<CocktailId> input = Arrays.asList(new CocktailId(UUID.randomUUID().toString()),

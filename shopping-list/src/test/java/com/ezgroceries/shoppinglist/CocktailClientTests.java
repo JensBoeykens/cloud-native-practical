@@ -1,6 +1,7 @@
 package com.ezgroceries.shoppinglist;
 
 import com.ezgroceries.shoppinglist.model.CocktailResource;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class CocktailClientTests {
 	private TestRestTemplate restTemplate;
 	
 	@Test
+    @Disabled
 	public void listCocktails() {
 
 		ResponseEntity<CocktailResource[]> response =

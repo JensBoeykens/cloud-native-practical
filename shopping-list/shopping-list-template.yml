@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: shoppinglist-service
+    spec:
+      selector:
+        app: shopping-list
+      ports:
+        - port: 80
+          protocol: TCP
+          name: tcp-80
+          targetPort: 8080
+        - port: 443
+          protocol: TCP
+          name: tcp-443
+          targetPort: 8443
+      type: LoadBalancer
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: shopping-list-deployment
+      annotations:
+        version: 0.0.1-SNAPSHOT
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: shopping-list
+      template:
+        metadata:
+          labels:
+            app: shopping-list
+            name: shopping-list
+            component: shopping-list
+        spec:
+          containers:
+            - name: shopping-list
+              image: shopping-list:0.0.1-SNAPSHOT
+              ports:
+                - containerPort: 8080
+                - containerPort: 8443
+              lifecycle:
+                preStop:
+                  exec:
+                    # SIGTERM triggers a quick exit; gracefully terminate instead
+                    command: ["kill", "-SIGINT", "`pidof java`"]
+              readinessProbe:
+                httpGet:
+                  path: /actuator/health
+                  port: 8080
+                initialDelaySeconds: 5
+                timeoutSeconds: 2
+                periodSeconds: 3
+                failureThreshold: 2
+              livenessProbe:
+                httpGet:
+                  path: /actuator/health
+                  port: 8080
+                initialDelaySeconds: 30
+                timeoutSeconds: 2
+                periodSeconds: 8
+                failureThreshold: 1
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "250m"
+                limits:
+                  memory: "128Mi"
+                  cpu: "500m"
+              env:
+                - name: SPRING_PROFILES_ACTIVE
+                  value: "hsqldb"
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      labels:
+        app: shopping-list
+      name: shopping-list
+    spec:
+      host: shoppinglist.openshift-workshop.gluo.io
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: shopping-list
+        weight: 100
+      tls:
+        termination: passthrough
