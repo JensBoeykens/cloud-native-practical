@@ -1,23 +1,6 @@
 apiVersion: v1
 kind: List
 items:
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      name: shoppinglist-service
-    spec:
-      selector:
-        app: shopping-list
-      ports:
-        - port: 80
-          protocol: TCP
-          name: tcp-80
-          targetPort: 8080
-        - port: 443
-          protocol: TCP
-          name: tcp-443
-          targetPort: 8443
-      type: LoadBalancer
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -51,7 +34,7 @@ items:
                 httpGet:
                   path: /actuator/health
                   port: 8080
-                initialDelaySeconds: 5
+                initialDelaySeconds: 120
                 timeoutSeconds: 2
                 periodSeconds: 3
                 failureThreshold: 2
@@ -59,20 +42,37 @@ items:
                 httpGet:
                   path: /actuator/health
                   port: 8080
-                initialDelaySeconds: 30
+                initialDelaySeconds: 300
                 timeoutSeconds: 2
                 periodSeconds: 8
                 failureThreshold: 1
               resources:
                 requests:
-                  memory: "64Mi"
+                  memory: "512Mi"
                   cpu: "250m"
                 limits:
-                  memory: "128Mi"
+                  memory: "1024Mi"
                   cpu: "500m"
               env:
                 - name: SPRING_PROFILES_ACTIVE
-                  value: "hsqldb"
+                  value: "hsqldb,realcocktail"
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: shoppinglist-service
+    spec:
+      selector:
+        app: shopping-list
+      ports:
+        - port: 80
+          protocol: TCP
+          name: tcp-80
+          targetPort: 8080
+        - port: 443
+          protocol: TCP
+          name: tcp-443
+          targetPort: 8443
+      type: LoadBalancer
   - apiVersion: v1
     kind: Route
     metadata:
@@ -82,10 +82,10 @@ items:
     spec:
       host: shoppinglist.openshift-workshop.gluo.io
       port:
-        targetPort: 8080-tcp
+        targetPort: tcp-80
       to:
         kind: Service
-        name: shopping-list
+        name: shoppinglist-service
         weight: 100
       tls:
         termination: passthrough
