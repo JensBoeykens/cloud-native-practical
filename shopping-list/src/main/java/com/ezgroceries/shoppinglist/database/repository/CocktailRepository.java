@@ -13,4 +13,6 @@ public interface CocktailRepository extends Repository<CocktailEntity, UUID> {
 	public List<CocktailEntity> findByIdDrinkIn(List<String> idDrinks);
 
 	CocktailEntity save(CocktailEntity newCocktailEntity);
+
+	List<CocktailEntity> findByNameContainingIgnoreCase(String search);
 }

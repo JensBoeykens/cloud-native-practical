@@ -50,4 +50,12 @@ public class CocktailEntity {
     public Set<String> getIngredients() {
         return this.ingredients;
     }
+
+    public String getIdDrink() {
+        return idDrink;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
