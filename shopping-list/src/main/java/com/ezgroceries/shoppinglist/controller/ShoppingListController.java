@@ -75,16 +75,4 @@ public class ShoppingListController {
         return new ResponseEntity(outputList,  HttpStatus.OK);
     }
 
-   /* private ResponseEntity<Void> entityWithLocation(Object resourceId) {
-
-        // Determines URL of child resource based on the full URL of the given
-        // request, appending the path info with the given resource Identifier
-        URI location = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{childId}").buildAndExpand(resourceId)
-                .toUri();
-
-        // Return an HttpEntity object - it will be used to build the
-        // HttpServletResponse
-        return ResponseEntity.created(location).build();
-    }*/
-
 }
