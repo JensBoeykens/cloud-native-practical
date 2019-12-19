@@ -1,5 +1,6 @@
 package com.ezgroceries.shoppinglist.service;
 
+import com.ezgroceries.shoppinglist.database.CocktailDBClient;
 import com.ezgroceries.shoppinglist.database.CocktailDBResponse;
 import com.ezgroceries.shoppinglist.database.entities.CocktailEntity;
 import com.ezgroceries.shoppinglist.database.repository.CocktailRepository;
@@ -14,8 +15,16 @@ public class CocktailService {
 
     private final CocktailRepository cocktailRepository;
 
-    public CocktailService(CocktailRepository cocktailRepository) {
+    private CocktailDBClient cocktailDBClient;
+
+    public CocktailService(CocktailRepository cocktailRepository, CocktailDBClient cocktailDBClient) {
         this.cocktailRepository = cocktailRepository;
+        this.cocktailDBClient = cocktailDBClient;
+    }
+
+    public List<CocktailResource> getCocktails(String search) {
+        CocktailDBResponse cocktailDBResponse = cocktailDBClient.searchCocktails(search);
+        return mergeCocktails(cocktailDBResponse.getDrinks());
     }
 
     public String[] getIngredients(List<UUID> cocktails) {
@@ -27,7 +36,7 @@ public class CocktailService {
     }
 
 
-    public List<CocktailResource> mergeCocktails(List<CocktailDBResponse.DrinkResource> drinks) {
+    private List<CocktailResource> mergeCocktails(List<CocktailDBResponse.DrinkResource> drinks) {
         //Get all the idDrink attributes
         List<String> ids = drinks.stream().map(drink -> drink.getIdDrink()).collect(Collectors.toList());
 

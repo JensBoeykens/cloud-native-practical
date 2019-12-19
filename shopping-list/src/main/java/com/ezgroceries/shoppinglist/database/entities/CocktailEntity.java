@@ -23,10 +23,6 @@ public class CocktailEntity {
     @Convert(converter = StringSetConverter.class)
     private Set<String> ingredients;
 
-    public static String getIdDrink(CocktailEntity entity) {
-        return entity.idDrink;
-    }
-
     public void setId(UUID id) {
         this.id = id;
     }
